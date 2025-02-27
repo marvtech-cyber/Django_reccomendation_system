@@ -5,7 +5,8 @@ saved_movie =  MovieFactory.create(), generatesa model instance and saves to dat
 movies = MovieFactory.create_batch(5), generates and saves a specified number of instances to the database eg 5.
 """
 
-from factory import DjangoModelFactory, Faker
+from factory.django import DjangoModelFactory
+from factory import Faker
 from ..models import Movie
 
 class MovieFactory(DjangoModelFactory):

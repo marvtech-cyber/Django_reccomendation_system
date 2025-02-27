@@ -8,7 +8,7 @@ from django.test import override_settings
 
 @pytest.mark.django_db
 def test_create_movie(client):
-    url = reverse("movies:movie-api")
+    url = reverse("movie-api")
     data = {"title": "Star-Trek", "genres": json.dumps(["Sci-fi", "Adventure"])}
 
     response = client.post(url, json=data)
@@ -19,7 +19,7 @@ def test_create_movie(client):
 @pytest.mark.django_db
 def test_retrieve_movie(client):
     movie = MovieFactory()
-    url = reverse("movies: movie-api-detail", kwargs={"pk": movie.id})
+    url = reverse("movies:movie-api-detail", kwargs={"pk": movie.id})
     response = client.get(url)
 
     assert response.status_code == status.HTTP_200_OK
@@ -33,10 +33,10 @@ def test_retrieve_movie(client):
 def test_update_movie(client):
     movie = MovieFactory()
     new_title = "Rambo"
-    url = reverse("movies: movies-api-detail", kwargs={"pk": movie.id})
+    url = reverse("movies:movie-api-detail", kwargs={"pk": movie.id})
     data = {"title": new_title}
 
-    response = client.put(url, data=data, content_type="application/json")
+    response = client.put(url, json=data)
     assert response.status_code == status.HTTP_200_OK, response.json()
     movie = Movie.objects.filter(id=movie.id).first()
     assert movie
@@ -76,7 +76,7 @@ def test_list_movies_with_pagination(client):
     assert "count" in data
     assert "next" in data
     assert "previous" in data
-    assert "result" in data
+    assert "results" in data
 
     # assert that the count matches the total number of movies created
     assert data["count"] == 10
@@ -94,9 +94,9 @@ def test_list_movies_with_pagination(client):
 
     # use a set to ensure that the returned movies match the expected movies
     returned_movie_ids = {movie["id"] for movie in data["results"]}
-    expected_movie_ids = {movie.id for movie in data["results"]}
+    expected_movie_ids = {movie.id for movie in movies}
     assert returned_movie_ids == expected_movie_ids 
 
     # verify that each movie in the response contains the expected keys
     for movie_data in data["results"]:
-        assert set(movie_data.keys()) == {"id", "title", "genrs"}
+        assert set(movie_data.keys()) == {"id", "title", "genres"}
