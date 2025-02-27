@@ -1,7 +1,7 @@
 import pytest
 from django.urls import reverse
 from rest_framework import status
-from movies.models import Movie
+from ..models import Movie
 from .factory import (MovieFactory,)
 import json
 from django.test import override_settings
@@ -46,7 +46,7 @@ def test_update_movie(client):
 @pytest.mark.django_db
 def test_delete_movie(client):
     movie = MovieFactory()
-    url = reverse("movies:movie-api-detail" kwargs={"pk":movie.id})
+    url = reverse("movies:movie-api-detail", kwargs={"pk":movie.id})
     response = client.delete(url)
 
     assert response.status_code == status.HTTP_204_NO_CONTENT
